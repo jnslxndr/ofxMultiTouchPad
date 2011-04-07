@@ -74,7 +74,7 @@ extern "C" {
     MTDeviceRef MTDeviceCreateDefault();
     void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
     void MTUnregisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
-    void MTDeviceStart(MTDeviceRef);
+    void MTDeviceStart(MTDeviceRef, int);
     void MTDeviceStop(MTDeviceRef);
     void MTDeviceRelease(MTDeviceRef);
     
