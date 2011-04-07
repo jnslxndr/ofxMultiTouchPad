@@ -65,7 +65,7 @@ ofxMultiTouchPad::ofxMultiTouchPad()
         printf("Creating Multitouch device\n");
         _mt_device = MTDeviceCreateDefault();
         MTRegisterContactFrameCallback(_mt_device, _mt_callback);
-        MTDeviceStart(_mt_device);
+        MTDeviceStart(_mt_device, 0);
     }
     else {
         printf("there's another instance already created,"
