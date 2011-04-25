@@ -71,6 +71,7 @@ extern "C" {
     typedef int MTDeviceRef;
     typedef int (*MTContactCallbackFunction)(int,Finger*,int,double,int);
     
+	CFMutableArrayRef * MTDeviceCreateList();
     MTDeviceRef MTDeviceCreateDefault();
     void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
     void MTUnregisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);

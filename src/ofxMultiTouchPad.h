@@ -84,10 +84,12 @@ NAME( const NAME& );
 
 #define _NUM_TOUCH_FINGERS 16 // who has more then 16 fingers?
 
+#define _MAX_DEVICES 4 //who has more than 4 devices?
+
 static Finger _touches[_NUM_TOUCH_FINGERS];
 static int fingerCount;
 
-static MTDeviceRef _mt_device;
+static MTDeviceRef _mt_device[_MAX_DEVICES];
 static int _mt_callback(int device, Finger *data, int nFingers,
                         double timestamp, int frame);
 
@@ -140,11 +142,15 @@ public:
     int  getTouchCount();
     void getTouchesAsOfPoints(std::vector<ofPoint> * pointv);
     
+    int getNumDevices();
+
 protected:
     TouchFrame _touchData;
     static int _guard;
     void callBackTriggered(TouchFrame & _t); // callback callback
     
+    int numDevices;
+
     /*
      deprecated ?
      */

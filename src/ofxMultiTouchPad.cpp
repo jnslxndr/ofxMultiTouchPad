@@ -3,6 +3,7 @@
 /* ------------------------------------------------------------------------- */
 /*                                                                           */
 /*  Created by jens a. ewald on 26.10.09.                                    */
+/*  Multi device support added by Zach Gage on 25.04.11                      */
 /*                                                                           */
 /*  http://www.openFrameworks.cc                                             */
 /*                                                                           */
@@ -63,9 +64,17 @@ ofxMultiTouchPad::ofxMultiTouchPad()
     _guard++;
     if (_guard==1) {
         printf("Creating Multitouch device\n");
-        _mt_device = MTDeviceCreateDefault();
-        MTRegisterContactFrameCallback(_mt_device, _mt_callback);
-        MTDeviceStart(_mt_device, 0);
+
+        CFMutableArrayRef* deviceList = MTDeviceCreateList();
+
+        numDevices = min((int)CFArrayGetCount((CFArrayRef)deviceList),_MAX_DEVICES);
+
+        for(int i=0;i<numDevices;i++){
+            _mt_device[i] = (MTDeviceRef)CFArrayGetValueAtIndex( (CFArrayRef) deviceList, i);//MTDeviceCreateDefault();
+
+            MTRegisterContactFrameCallback(_mt_device[i], _mt_callback);
+            MTDeviceStart(_mt_device[i], 0);
+        }
     }
     else {
         printf("there's another instance already created,"
@@ -84,16 +93,24 @@ ofxMultiTouchPad::~ofxMultiTouchPad()
     _guard--;
     if (_guard==0) {
         printf("Multitouch device has been disconnected\n");
-        MTDeviceStop(_mt_device);
-        MTUnregisterContactFrameCallback(_mt_device, _mt_callback);
-        MTDeviceRelease(_mt_device);
-        _mt_device = NULL;
+
+        for(int i=0;i<numDevices;i++){
+            MTDeviceStop(_mt_device[i]);
+            MTUnregisterContactFrameCallback(_mt_device[i], _mt_callback);
+            MTDeviceRelease(_mt_device[i]);
+            _mt_device[i] = NULL;
+        }
     }
     ofRemoveListener(MTUpdateBlock, this,
                      &ofxMultiTouchPad::callBackTriggered);
     
     this->fingers = NULL;
     this->_fingerCount = NULL;
+}
+
+int ofxMultiTouchPad::getNumDevices()
+{
+    return numDevices;
 }
 
 bool ofxMultiTouchPad::getTouchAt(int pos, MTouch* touch)
