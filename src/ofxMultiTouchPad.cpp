@@ -162,18 +162,17 @@ void ofxMultiTouchPad::getTouchesAsOfPoints(std::vector<ofPoint> * pointv){
 // ------------------------------------------------------------- protected
 void ofxMultiTouchPad::callBackTriggered(TouchFrame  & _t)
 {
-    int oldTouchCount = _touchData.count;
-	_touchData = _t;
+    int oldTouchCount = _touchData.count; // Cache the old count
+    _touchData = _t; // Update the data
 	
     if (oldTouchCount < _t.count) {
         /*
          TODO: extract the new touch and pass its ID
          */
         ofNotifyEvent(touchAdded, _t.count, this);
-    } else if (_touchData.count > _t.count) {
+    } else if (oldTouchCount > _t.count) {
         ofNotifyEvent(touchRemoved, _t.count, this);
     } else {
-		//    printf("update listener called\n");
-		ofNotifyEvent(update, _touchData.count, this);
-	}
+	ofNotifyEvent(update, _t.count, this);
+    }
 }
