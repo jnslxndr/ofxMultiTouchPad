@@ -12,7 +12,7 @@
 /*  & the puredata external by Hans-Christoph Steiner                        */
 /*                                                                           */
 /*                                                                           */
-/*  Copyright (c) 2009 jens alexander ewald http://www.520at.net             */
+/*  Copyright (c) 2009 - 2012 jens alexander ewald http://lea.io             */
 /*  Copyright (c) 2009 Hans-Christoph Steiner                                */
 /*  Copyright (c) 2008 Steike                                                */
 /*                                                                           */
@@ -96,65 +96,84 @@ ofxMultiTouchPad::~ofxMultiTouchPad()
     this->_fingerCount = NULL;
 }
 
+
+void Finger2MTouch(Finger &f,MTouch &_t)
+{
+  //if(f==NULL || _t==NULL) return;
+  _t.ID    = f.identifier;
+  _t.frame = f.frame;
+  _t.x     = f.normalized.pos.x;
+  _t.y     = 1.f-f.normalized.pos.y;
+  if (f.size > 0.001) _t.angle = 180 - (f.angle * 90 / atan2(1,0));
+  _t.size  = f.size;
+}
+
+
 bool ofxMultiTouchPad::getTouchAt(int pos, MTouch* touch)
 {
-    MTouch _t;
-    if (pos < _touchData.count) {
-        Finger f = _touchData.touches[pos];
-        _t.ID = f.identifier;
-        _t.frame = f.frame;
-        _t.x = f.normalized.pos.x;
-        _t.y = 1.f-f.normalized.pos.y;
-        
-        /*
-         FIXME: this only makes sense, when the size is big enough,
-                otherwise we have too much jitter...
-         */
-        _t.angle = 180 - (f.angle * 90 / atan2(1,0));
-        
-        _t.size = f.size;
-        *touch = _t;
-        return true;
-    }
-    else {
-        *touch = _t;
-        return false;
-    }
+  MTouch _t;
+  bool success = false;
+  if (pos < _touchData.count) {
+    Finger f = _touchData.touches[pos];
+    Finger2MTouch(f, _t);
+    success = true;
+  }
+  *touch = _t;
+  return success;
 }
 
 bool ofxMultiTouchPad::getTouchAsOfPointAt(int pos, ofPoint* p)
 {
-    ofPoint _t(0,0,0);
-    if (pos < _touchData.count) {
-        Finger f = _touchData.touches[pos];
-        _t.x = f.normalized.pos.x;
-        _t.y = 1.f-f.normalized.pos.y;
-        *p = _t;
-        return true;
-    }
-    else {
-        *p = _t;
-        return false;
-    }
+  ofPoint _t(0,0,0);
+  bool success = false;
+  if (pos < _touchData.count) {
+    Finger f = _touchData.touches[pos];
+    _t.x = f.normalized.pos.x;
+    _t.y = 1.f-f.normalized.pos.y;
+  }
+  *p = _t;
+  return success;
 }
 
 int ofxMultiTouchPad::getTouchCount()
 {
-//    int e;
-//    if (_fingerCount==NULL) {
-//        e = -1;
-//    } else {
-//        e = *_fingerCount;
-//    }
     return _touchData.count;
 }
 
 void ofxMultiTouchPad::getTouchesAsOfPoints(std::vector<ofPoint> * pointv){
-    pointv->erase(pointv->begin(),pointv->begin()+pointv->size());
-    TouchFrame _data = _touchData;
-    for (int i=0; i<_data.count; i++)
-        pointv->push_back(ofPoint(_data.touches[i].normalized.pos.x,
-                                  1-_data.touches[i].normalized.pos.y, 0));
+  if (pointv == NULL) return; // guard for evil pointers
+  
+  pointv->erase(pointv->begin(),pointv->begin()+pointv->size());
+  
+  TouchFrame _data = _touchData;
+  for (int i=0; i<_data.count; i++)
+    pointv->push_back(ofPoint(_data.touches[i].normalized.pos.x,
+                              1-_data.touches[i].normalized.pos.y, 0));
+}
+
+
+MTouch ofxMultiTouchPad::getTouchAt(int pos)
+{
+  MTouch _t;
+  if (pos < _touchData.count) {
+    Finger f = _touchData.touches[pos];
+    Finger2MTouch(f, _t);
+  }
+  return _t;
+}
+
+std::vector<MTouch> ofxMultiTouchPad::getTouches()
+{
+  std::vector<MTouch> touches;
+  TouchFrame _data = _touchData;
+  Finger f;  MTouch _t;
+  for (int i=0; i<_data.count; i++)
+  {
+    f = _data.touches[i];
+    Finger2MTouch(f, _t);
+    touches.push_back(_t);
+  }
+  return touches;
 }
 
 

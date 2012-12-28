@@ -12,7 +12,7 @@
 /*  & the puredata external by Hans-Christoph Steiner                        */
 /*                                                                           */
 /*                                                                           */
-/*  Copyright (c) 2009 jens alexander ewald http://www.520at.net             */
+/*  Copyright (c) 2009 - 2012 jens alexander ewald http://lea.io             */
 /*  Copyright (c) 2009 Hans-Christoph Steiner                                */
 /*  Copyright (c) 2008 Steike                                                */
 /*                                                                           */

@@ -12,7 +12,7 @@
 /*  & the puredata external by Hans-Christoph Steiner                        */
 /*                                                                           */
 /*                                                                           */
-/*  Copyright (c) 2009 jens alexander ewald http://www.520at.net             */
+/*  Copyright (c) 2009 - 2012 jens alexander ewald http://lea.io             */
 /*  Copyright (c) 2009 Hans-Christoph Steiner                                */
 /*  Copyright (c) 2008 Steike                                                */
 /*                                                                           */
@@ -62,19 +62,6 @@ and add the MultitouchSupport.framework from the PrivateFrameworks folder
     #endif
 #endif
 
-/*
- FIXME: really needed?
- */
-#define DEF_SINGLETON( NAME )    \
-public:                        \
-static NAME& instance()      \
-{                            \
-static NAME _instance;    \
-return _instance;         \
-}                            \
-private:                       \
-NAME();               \
-NAME( const NAME& );
 
 /*
  * the multitouch is global & unique, so we do it static.
@@ -104,52 +91,43 @@ typedef struct MTouch {
  TODO: optimize the container to store timestamps, when a touch is added
  */
 typedef struct TouchFrame {
-    Finger touches[_NUM_TOUCH_FINGERS];
-    int device,count,frame;
-    double timestamp;
-    TouchFrame(): count(0){};
+  Finger touches[_NUM_TOUCH_FINGERS];
+  int device,count,frame;
+  double timestamp;
+  TouchFrame(): count(0){};
 } TouchFrame;
 
 static TouchFrame touchEvent;
 static ofEvent<TouchFrame> MTUpdateBlock;
 
-
-
-/*
- The actual class
- 
- maybe it's better to implement this as a singleton
- using the DEF_SINGLETON macro...
- 
- TODO: implement method to return scaled (ofGetWidth/Height) result. Listener?
- */
-
 class ofxMultiTouchPad {
     
 public:
-    ofEvent<int> update; // occurs each callback call and sends the touchCount
-    ofEvent<int> touchAdded; // if the number of touches increased
-    ofEvent<int> touchRemoved;  // less touches as before
+  ofEvent<int> update; // occurs each callback call and sends the touchCount
+  ofEvent<int> touchAdded; // if the number of touches increased
+  ofEvent<int> touchRemoved;  // less touches as before
     
-    static const int maxTouches;
-    ofxMultiTouchPad();  // initialize and create a link to the device
-    ~ofxMultiTouchPad(); // unlink the device
-    
-    bool getTouchAt(int pos, MTouch * touch);
-    bool getTouchAsOfPointAt(int pos, ofPoint * p);
-    int  getTouchCount();
-    void getTouchesAsOfPoints(std::vector<ofPoint> * pointv);
-    
+  static const int maxTouches;
+  ofxMultiTouchPad();  // initialize and create a link to the device
+  ~ofxMultiTouchPad(); // unlink the device
+
+  bool getTouchAt(int pos, MTouch * touch);
+  MTouch getTouchAt(int pos);
+  bool getTouchAsOfPointAt(int pos, ofPoint * p);
+  int  getTouchCount();
+  void getTouchesAsOfPoints(std::vector<ofPoint> * pointv);
+  std::vector<MTouch> getTouches();
+  
 protected:
-    TouchFrame _touchData;
-    static int _guard;
-    void callBackTriggered(TouchFrame & _t); // callback callback
+  TouchFrame _touchData;
+  static int _guard;
+  void callBackTriggered(TouchFrame & _t); // callback callback
     
-    /*
-     deprecated ?
-     */
-    Finger (*fingers)[_NUM_TOUCH_FINGERS];
-    int * _fingerCount;
+  /*
+   deprecated ?
+   */
+  Finger (*fingers)[_NUM_TOUCH_FINGERS];
+  int * _fingerCount;
 };
 
 
