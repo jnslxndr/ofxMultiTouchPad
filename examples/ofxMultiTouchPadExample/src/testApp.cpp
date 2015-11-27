@@ -15,7 +15,7 @@ void testApp::draw(){
   ofEnableSmoothing();
   
   /*
-    Use the MTouch datatype for more information on touches
+    Method 1: Use the MTouch datatype to access touch data
    */
   ofSetColor(255, 128, 0);
   std::vector<MTouch> mTouches = pad.getTouches();
@@ -32,7 +32,7 @@ void testApp::draw(){
   
   
   /*
-    Iterate over all touches as a vector of ofPoints Ð very simple datatype though...
+    Method 2: Iterate over all touches as a vector of ofPoints Ð very simple datatype though...
    */
   ofPushMatrix();
   ofSetColor(255, 255, 255);
@@ -44,8 +44,10 @@ void testApp::draw(){
   }
   ofPopMatrix();
   
+    
+  // Print some Debug Info
   string info = "Number of touches: "+ofToString(pad.getTouchCount(),0);
-  ofDrawBitmapStringHighlight(info, 20, 20);
+  ofDrawBitmapString(info, ofPoint(0, 20));
 }
 
 //--------------------------------------------------------------
